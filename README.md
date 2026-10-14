@@ -65,7 +65,11 @@ practice-mevn/
     ├── vite.config.js                # Vite dev server configuration (port 5173)
     └── src/
         ├── main.js                   # Mounts Vue application
-        └── App.vue                   # [V]iew: Form, filter input, and task list
+        ├── App.vue                   # [V]iew Container: State, API fetch calls, and layout
+        └── components/
+            └── tasks/                # 📁 Segregated Task Components
+                ├── TaskForm.vue      # Form component (Add & Edit task inputs)
+                └── TaskList.vue      # List component (Task items, toggle & action buttons)
 ```
 
 ---

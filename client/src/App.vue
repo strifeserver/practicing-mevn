@@ -1,5 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import TaskForm from './components/tasks/TaskForm.vue'
+import TaskList from './components/tasks/TaskList.vue'
 
 // Target backend API running on port 5050
 const API_URL = `http://${window.location.hostname}:5050/api/tasks`
@@ -104,52 +106,23 @@ onMounted(() => {
         placeholder="Type to filter tasks dynamically..."
       />
 
-      <!-- 2. CREATE / EDIT FORM -->
-      <form @submit.prevent="saveTask" class="form-group">
-        <input
-          type="text"
-          v-model="taskTitle"
-          :placeholder="editingId ? 'Edit task title...' : 'Enter new task...'"
-          required
-        />
-        <button type="submit" class="btn-primary">
-          {{ editingId ? 'Update Task' : 'Add Task' }}
-        </button>
-        <button
-          type="button"
-          v-if="editingId"
-          class="btn-secondary"
-          @click="cancelEdit"
-        >
-          Cancel
-        </button>
-      </form>
+      <!-- 2. SEGREGATED TASK FORM COMPONENT -->
+      <TaskForm
+        v-model="taskTitle"
+        :editing-id="editingId"
+        @submit="saveTask"
+        @cancel="cancelEdit"
+      />
     </div>
 
-    <!-- 3. TASK LIST VIEW -->
-    <div class="card">
-      <div v-if="loading" class="status-msg">Loading tasks...</div>
-      <div v-else-if="tasks.length === 0" class="status-msg">No tasks found.</div>
-      <ul v-else class="task-list">
-        <li v-for="task in tasks" :key="task._id" class="task-item">
-          <div class="task-left">
-            <input
-              type="checkbox"
-              :checked="task.completed"
-              @change="toggleComplete(task)"
-            />
-            <span :class="{ completed: task.completed }">
-              {{ task.title }}
-            </span>
-          </div>
-
-          <div class="task-actions">
-            <button class="btn-edit" @click="startEdit(task)">Edit</button>
-            <button class="btn-delete" @click="deleteTask(task._id)">Delete</button>
-          </div>
-        </li>
-      </ul>
-    </div>
+    <!-- 3. SEGREGATED TASK LIST COMPONENT -->
+    <TaskList
+      :tasks="tasks"
+      :loading="loading"
+      @toggle="toggleComplete"
+      @edit="startEdit"
+      @delete="deleteTask"
+    />
   </div>
 </template>
 
@@ -183,73 +156,5 @@ input[type="text"] {
   width: 100%;
   margin-top: 6px;
   margin-bottom: 16px;
-}
-.form-group {
-  display: flex;
-  gap: 8px;
-}
-.form-group input {
-  flex: 1;
-}
-button {
-  padding: 9px 14px;
-  font-size: 14px;
-  cursor: pointer;
-  border: none;
-  border-radius: 6px;
-  font-weight: 500;
-  transition: opacity 0.2s;
-}
-button:hover {
-  opacity: 0.9;
-}
-.btn-primary {
-  background: #2563eb;
-  color: #fff;
-}
-.btn-secondary {
-  background: #6b7280;
-  color: #fff;
-}
-.btn-edit {
-  background: #3b82f6;
-  color: #fff;
-}
-.btn-delete {
-  background: #ef4444;
-  color: #fff;
-}
-.status-msg {
-  text-align: center;
-  color: #6b7280;
-  padding: 12px 0;
-}
-.task-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.task-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 8px;
-  border-bottom: 1px solid #f3f4f6;
-}
-.task-item:last-child {
-  border-bottom: none;
-}
-.task-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.completed {
-  text-decoration: line-through;
-  color: #9ca3af;
-}
-.task-actions {
-  display: flex;
-  gap: 6px;
 }
 </style>
